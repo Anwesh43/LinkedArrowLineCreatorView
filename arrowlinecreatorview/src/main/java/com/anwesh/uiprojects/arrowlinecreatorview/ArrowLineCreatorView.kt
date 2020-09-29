@@ -192,4 +192,25 @@ class ArrowLineCreatorView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : ArrowLineCreatorView) {
+
+        private val animator : Animator = Animator(view)
+        private val alc : ArrowLineCreator = ArrowLineCreator(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            alc.draw(canvas, paint)
+            animator.animate {
+                alc.update {
+                    animator.stop()
+                }
+            }
+        }
+        fun handleTap() {
+            alc.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
