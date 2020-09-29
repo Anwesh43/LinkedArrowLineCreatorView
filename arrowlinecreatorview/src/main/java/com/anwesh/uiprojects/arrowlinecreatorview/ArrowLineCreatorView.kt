@@ -19,7 +19,7 @@ val colors : Array<Int> = arrayOf(
         "#FFC107",
         "#4CAF50"
 ).map({Color.parseColor(it)}).toTypedArray()
-val parts : Int = 4
+val parts : Int = 5
 val scGap : Float = 0.02f / 4
 val strokeFactor : Int = 90
 val sizeFactor : Float = 3.9f
@@ -46,8 +46,8 @@ fun Canvas.drawArrowLineCreator(scale : Float, w : Float, h : Float, paint : Pai
         save()
         scale(1f - 2 * j, 1f)
         translate(-size / 2, 0f)
-        rotate(rot * sf2)
-        drawLine(0f, 0f, 0f, size * sf1, paint)
+        rotate((90f - rot) * sf2)
+        drawLine(0f, 0f, 0f, -size * sf1, paint)
         restore()
     }
     save()
@@ -68,14 +68,16 @@ fun Canvas.drawALCNode(i : Int, scale : Float, paint : Paint) {
 
 class ArrowLineCreatorView(ctx : Context) : View(ctx) {
 
-    override fun onDraw(canvas : Canvas) {
+    private val renderer : Renderer = Renderer(this)
 
+    override fun onDraw(canvas : Canvas) {
+        renderer.render(canvas)
     }
 
     override fun onTouchEvent(event : MotionEvent) : Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                renderer.handleTap()
             }
         }
         return true
@@ -197,8 +199,8 @@ class ArrowLineCreatorView(ctx : Context) : View(ctx) {
 
         private val animator : Animator = Animator(view)
         private val alc : ArrowLineCreator = ArrowLineCreator(0)
-
-        fun render(canvas : Canvas, paint : Paint) {
+        private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        fun render(canvas : Canvas) {
             canvas.drawColor(backColor)
             alc.draw(canvas, paint)
             animator.animate {
